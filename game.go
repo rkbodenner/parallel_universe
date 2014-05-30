@@ -4,23 +4,33 @@ import (
   "fmt"
 )
 
+type Player string
+
 type Game struct {
   Setup *SetupRules
-  PlayerCount int
+  Players []Player
 }
 
-func NewGame(rules *SetupRules, playerCount int) *Game {
+func NewGame(rules *SetupRules, playerCount uint) *Game {
+  players := make([]Player, playerCount)
+  for i := range players {
+    players[i] = (Player)(fmt.Sprintf("Player %d", i+1))
+  }
   return &Game{
     Setup: rules,
-    PlayerCount: playerCount,
+    Players: players,
   }
 }
 
-func (game *Game) PrintSteps() (error) {
+func (game *Game) PlayerCount() int {
+  return len(game.Players)
+}
+
+func (game *Game) PrintSteps() error {
   for _,r := range game.Setup.Steps {
     if "Each player" == r.Arity {
-      for i := 0; i < game.PlayerCount; i++ {
-        fmt.Printf("%s\tPlayer %d\n", r.Description, i)
+      for _,p := range game.Players {
+        fmt.Printf("%s\t%s\n", r.Description, p)
       }
     } else {
       fmt.Printf("%s\t%s\n", r.Description, r.Arity)
