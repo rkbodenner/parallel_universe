@@ -4,6 +4,11 @@ import (
   "fmt"
 )
 
+type Game struct {
+  Setup *SetupRules
+  PlayerCount int
+}
+
 type SetupRules struct {
   Steps []SetupStep
 }
@@ -20,9 +25,20 @@ var TicTacToeSetup = SetupRules{
   },
 }
 
+var TicTacToe = Game{
+  Setup: &TicTacToeSetup,
+  PlayerCount: 2,
+}
+
 func main() {
   fmt.Println("game on")
-  for _,r := range TicTacToeSetup.Steps {
-    fmt.Printf("%s\t%s\n", r.Description, r.Arity)
+  for _,r := range TicTacToe.Setup.Steps {
+    if "Each player" == r.Arity {
+      for i := 0; i < TicTacToe.PlayerCount; i++ {
+        fmt.Printf("%s\tPlayer %d\n", r.Description, i)
+      }
+    } else {
+      fmt.Printf("%s\t%s\n", r.Description, r.Arity)
+    }
   }
 }
