@@ -9,6 +9,13 @@ type Game struct {
   PlayerCount int
 }
 
+func NewGame(rules *SetupRules, playerCount int) *Game {
+  return &Game{
+    Setup: rules,
+    PlayerCount: playerCount,
+  }
+}
+
 func (game *Game) PrintSteps() (error) {
   for _,r := range game.Setup.Steps {
     if "Each player" == r.Arity {
@@ -39,12 +46,7 @@ func NewTicTacToe() *Game {
     },
   }
 
-  var game = Game{
-    Setup: &setup,
-    PlayerCount: 2,
-  }
-
-  return &game
+  return NewGame(&setup, 2)
 }
 
 func NewForbiddenIsland() *Game {
@@ -61,12 +63,7 @@ func NewForbiddenIsland() *Game {
     },
   }
 
-  var game = Game{
-    Setup: &setup,
-    PlayerCount: 2,
-  }
-
-  return &game
+  return NewGame(&setup, 2)
 }
 
 func main() {
