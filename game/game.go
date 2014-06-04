@@ -41,6 +41,7 @@ func NewGame(rules []SetupRule, playerCount uint) *Game {
   return &Game{
     SetupRules: rules,
     Players: players,
+    SetupAssignments: make(map[Player][]SetupStep),
     SetupSteps: setupSteps,
   }
 }
@@ -49,9 +50,54 @@ func (game *Game) PlayerCount() int {
   return len(game.Players)
 }
 
-func (game *Game) AssignSteps() error {
-  game.SetupAssignments = make(map[Player][]SetupStep)
+func (game *Game) completeCurrentSetupStep(player Player) {
+  for _,step := range game.SetupAssignments[player] {
+    step.SetDone()
+  }
+}
 
+func (game *Game) IsSetupStepAssigned(needle SetupStep) bool {
+  for _,steps := range game.SetupAssignments {
+    for _,step := range steps {
+      if needle == step {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+func (game *Game) findNextUndoneSetupStep(player Player) (SetupStep, error) {
+  for _,step := range game.SetupSteps {
+    if !game.IsSetupStepAssigned(step) && step.CanBeOwnedBy(player) && !step.Done() {
+      return step, nil
+    }
+  }
+  return nil, fmt.Errorf("No undone steps available for %s", player)
+}
+
+func (game *Game) NextStep(player Player) (SetupStep, error) {
+  found := false
+  for _,p := range game.Players {
+    if p == player {
+      found = true
+    }
+  }
+  if ! found {
+    return nil, fmt.Errorf("No such player: %i", player)
+  }
+
+  game.completeCurrentSetupStep(player)
+  step,err := game.findNextUndoneSetupStep(player)
+  if nil != err {
+    return step, err
+  }
+  game.SetupAssignments[player] = append(game.SetupAssignments[player], step)
+
+  return step, nil
+}
+
+func (game *Game) AssignSteps() {
   for _,step := range game.SetupSteps {
     // Round-robin the one-time steps amongst all players
     if "Once" == step.Rule().Arity {
@@ -68,10 +114,16 @@ func (game *Game) AssignSteps() error {
       game.SetupAssignments[player] = append(game.SetupAssignments[player], step)
     }
   }
-  return nil
 }
 
-func (game *Game) PrintStepAssignments() error {
+func (game *Game) PrintSetupSteps() {
+  for _,step := range game.SetupSteps {
+    fmt.Printf("%s\t%t\n", step.Rule().Description, step.Done())
+  }
+  fmt.Println("---")
+}
+
+func (game *Game) PrintStepAssignments() {
   for _,player := range game.Players {
     fmt.Printf("-- %d steps for %s\n", len(game.SetupAssignments[player]), player)
     for _,step := range game.SetupAssignments[player] {
@@ -83,10 +135,9 @@ func (game *Game) PrintStepAssignments() error {
       }
     }
   }
-  return nil
 }
 
-func (game *Game) PrintSetupRules() error {
+func (game *Game) PrintSetupRules() {
   for _,r := range game.SetupRules {
     if "Each player" == r.Arity {
       for _,p := range game.Players {
@@ -96,7 +147,6 @@ func (game *Game) PrintSetupRules() error {
       fmt.Printf("%s\t%s\n", r.Description, r.Arity)
     }
   }
-  return nil
 }
 
 type SetupRule struct {
@@ -107,19 +157,22 @@ type SetupRule struct {
 type SetupStep interface {
   Rule() SetupRule
   Owner() Player
+  CanBeOwnedBy(Player) bool
+  SetDone()
+  Done() bool
 }
 
 type SinglePlayerSetupStep struct {
   rule SetupRule
   owner Player
-  Done bool
+  done bool
 }
 
 func NewSinglePlayerSetupStep(rule SetupRule, owner Player) (*SinglePlayerSetupStep, error) {
   if "Each player" != rule.Arity {
     return nil, fmt.Errorf("Setup rule must be for each player")
   }
-  return &SinglePlayerSetupStep{rule: rule, owner: owner, Done: false}, nil
+  return &SinglePlayerSetupStep{rule: rule, owner: owner, done: false}, nil
 }
 
 func (step *SinglePlayerSetupStep) Rule() SetupRule {
@@ -130,16 +183,28 @@ func (step *SinglePlayerSetupStep) Owner() Player {
   return step.owner
 }
 
+func (step *SinglePlayerSetupStep) CanBeOwnedBy(player Player) bool {
+  return player == step.Owner()
+}
+
+func (step *SinglePlayerSetupStep) SetDone() {
+  step.done = true
+}
+
+func (step *SinglePlayerSetupStep) Done() bool {
+  return step.done
+}
+
 type GlobalSetupStep struct {
   rule SetupRule
-  Done bool
+  done bool
 }
 
 func NewGlobalSetupStep(rule SetupRule) (*GlobalSetupStep, error) {
   if "Once" != rule.Arity {
     return nil, fmt.Errorf("Setup rule must be done once")
   }
-  return &GlobalSetupStep{rule: rule, Done: false}, nil
+  return &GlobalSetupStep{rule: rule, done: false}, nil
 }
 
 func (step *GlobalSetupStep) Rule() SetupRule {
@@ -148,4 +213,16 @@ func (step *GlobalSetupStep) Rule() SetupRule {
 
 func (step *GlobalSetupStep) Owner() Player {
   return Player("global")
+}
+
+func (step *GlobalSetupStep) CanBeOwnedBy(player Player) bool {
+  return true
+}
+
+func (step *GlobalSetupStep) SetDone() {
+  step.done = true
+}
+
+func (step *GlobalSetupStep) Done() bool {
+  return step.done
 }

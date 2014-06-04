@@ -32,18 +32,21 @@ func NewForbiddenIsland() *game.Game {
 func main() {
   fmt.Println("game on")
   game := NewForbiddenIsland()
-  game.AssignSteps()
+
+//  game.AssignSteps()
+//  game.PrintStepAssignments()
+
+  game.NextStep(game.Players[0])
+  game.NextStep(game.Players[1])
+  game.NextStep(game.Players[0])
+  game.NextStep(game.Players[1])
+  game.NextStep(game.Players[0])
+  game.NextStep(game.Players[0])
+  game.NextStep(game.Players[0])
+  game.NextStep(game.Players[1])
+  game.NextStep(game.Players[0])
   game.PrintStepAssignments()
-  /*
-  game.NextStep(game.Players[0])
-  game.NextStep(game.Players[1])
-  game.NextStep(game.Players[0])
-  game.NextStep(game.Players[1])
-  game.NextStep(game.Players[0])
-  game.NextStep(game.Players[0])
-  game.NextStep(game.Players[0])
-  game.NextStep(game.Players[1])
-  game.NextStep(game.Players[0])
-  game.PrintSteps()
-  */
+
+  fmt.Println();
+  game.PrintSetupRules()
 }
