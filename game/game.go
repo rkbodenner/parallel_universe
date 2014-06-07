@@ -7,13 +7,14 @@ import (
 type Player string
 
 type Game struct {
+  Name string
   SetupRules []SetupRule
   Players []Player
   SetupAssignments map[Player][]SetupStep
   SetupSteps []SetupStep
 }
 
-func NewGame(rules []SetupRule, playerCount uint) *Game {
+func NewGame(name string, rules []SetupRule, playerCount uint) *Game {
   players := make([]Player, playerCount)
   for i := range players {
     players[i] = (Player)(fmt.Sprintf("Player %d", i+1))
@@ -39,6 +40,7 @@ func NewGame(rules []SetupRule, playerCount uint) *Game {
   }
 
   return &Game{
+    Name: name,
     SetupRules: rules,
     Players: players,
     SetupAssignments: make(map[Player][]SetupStep),
