@@ -10,7 +10,7 @@ func NewTicTacToe() *game.Game {
     {"Choose X or O", "Each player"},
   }
 
-  return game.NewGame("Tic-Tac-Toe", setup, 2)
+  return game.NewGame("Tic-Tac-Toe", setup)
 }
 
 func NewForbiddenIsland() *game.Game {
@@ -25,7 +25,7 @@ func NewForbiddenIsland() *game.Game {
     {"Set the water level", "Once"},
   }
 
-  return game.NewGame("Forbidden Island", setup, 2)
+  return game.NewGame("Forbidden Island", setup)
 }
 
 type Collection struct {
