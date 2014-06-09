@@ -5,7 +5,8 @@ import (
 )
 
 type Game struct {
-  Name string
+  Id uint `json:"id"`
+  Name string `json:"name"`
   SetupRules []SetupRule
 }
 
