@@ -3,13 +3,19 @@ package main
 import (
   "fmt"
   "github.com/rkbodenner/parallel_universe/collection"
+  "github.com/rkbodenner/parallel_universe/game"
   "github.com/rkbodenner/parallel_universe/session"
 )
 
 func main() {
-  fmt.Println("game on")
+  var players = []*game.Player{
+    &game.Player{1, "Player One"},
+    &game.Player{2, "Player Two"},
+  }
   game := collection.NewForbiddenIsland()
-  session := session.NewSession(game, 2)
+  session := session.NewSession(game, players)
+
+  fmt.Println("game on")
 
   session.NextStep(session.Players[0])
   session.NextStep(session.Players[1])
@@ -22,6 +28,6 @@ func main() {
   session.NextStep(session.Players[0])
   session.PrintStepAssignments()
 
-  fmt.Println();
+  fmt.Println()
   game.PrintSetupRules()
 }

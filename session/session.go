@@ -12,12 +12,7 @@ type Session struct {
   SetupSteps []game.SetupStep
 }
 
-func NewSession(g *game.Game, playerCount uint) *Session {
-  players := make([]game.Player, playerCount)
-  for i := range players {
-    players[i] = (game.Player)(fmt.Sprintf("Player %d", i+1))
-  }
-
+func NewSession(g *game.Game, players []*game.Player) *Session {
   setupSteps := make([]game.SetupStep, 0)
   for _,rule := range g.SetupRules {
     if "Once" == rule.Arity {
@@ -71,7 +66,7 @@ func (session *Session) findNextUndoneSetupStep(player game.Player) (game.SetupS
       return step, nil
     }
   }
-  return nil, fmt.Errorf("No undone steps available for %s", player)
+  return nil, fmt.Errorf("No undone steps available for %s", player.Name)
 }
 
 func (session *Session) NextStep(player game.Player) (game.SetupStep, error) {
