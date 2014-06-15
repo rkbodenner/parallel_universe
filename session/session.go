@@ -48,10 +48,6 @@ func NewSession(g *game.Game, players []*game.Player) *Session {
   }
 }
 
-func (session *Session) PlayerCount() int {
-  return len(session.Players)
-}
-
 func (session *Session) findNextUndoneSetupStep(player *game.Player) (game.SetupStep, error) {
   for step,_ := range session.freeSetupSteps {
     if step.CanBeOwnedBy(player) && !step.IsDone() {
