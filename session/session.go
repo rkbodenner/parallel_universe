@@ -6,10 +6,12 @@ import (
 )
 
 type Session struct {
+  Id uint `json:"id"`
   Game *game.Game
-  Players []game.Player
-  SetupAssignments map[game.Player][]game.SetupStep
+  Players []*game.Player
+  SetupAssignments StepAssignments
   SetupSteps []game.SetupStep
+  freeSetupSteps map[game.SetupStep]bool
 }
 
 func NewSession(g *game.Game, players []*game.Player) *Session {
@@ -31,11 +33,18 @@ func NewSession(g *game.Game, players []*game.Player) *Session {
       }
     }
   }
+
+  freeSetupSteps := make(map[game.SetupStep]bool)
+  for _,step := range setupSteps {
+    freeSetupSteps[step] = true
+  }
+
   return &Session{
     Game: g,
     Players: players,
-    SetupAssignments: make(map[game.Player][]game.SetupStep),
+    SetupAssignments: NewStepMap(),
     SetupSteps: setupSteps,
+    freeSetupSteps: freeSetupSteps,
   }
 }
 
@@ -43,71 +52,25 @@ func (session *Session) PlayerCount() int {
   return len(session.Players)
 }
 
-func (session *Session) completeCurrentSetupStep(player game.Player) {
-  for _,step := range session.SetupAssignments[player] {
-    step.SetDone()
-  }
-}
-
-func (session *Session) IsSetupStepAssigned(needle game.SetupStep) bool {
-  for _,steps := range session.SetupAssignments {
-    for _,step := range steps {
-      if needle == step {
-        return true
-      }
-    }
-  }
-  return false
-}
-
-func (session *Session) findNextUndoneSetupStep(player game.Player) (game.SetupStep, error) {
-  for _,step := range session.SetupSteps {
-    if !session.IsSetupStepAssigned(step) && step.CanBeOwnedBy(player) && !step.Done() {
+func (session *Session) findNextUndoneSetupStep(player *game.Player) (game.SetupStep, error) {
+  for step,_ := range session.freeSetupSteps {
+    if step.CanBeOwnedBy(player) && !step.IsDone() {
       return step, nil
     }
   }
   return nil, fmt.Errorf("No undone steps available for %s", player.Name)
 }
 
-func (session *Session) NextStep(player game.Player) (game.SetupStep, error) {
-  found := false
-  for _,p := range session.Players {
-    if p == player {
-      found = true
+func (session *Session) Step(player *game.Player) game.SetupStep {
+  step,assigned := session.SetupAssignments.Get(player)
+  if !assigned || (assigned && step.IsDone()) {
+    nextStep,error := session.findNextUndoneSetupStep(player)
+    if ( error != nil ) {
+      fmt.Println(error.Error())
+      return step
     }
+    session.SetupAssignments.Set(player, nextStep)
+    return nextStep
   }
-  if ! found {
-    return nil, fmt.Errorf("No such player: %i", player)
-  }
-
-  session.completeCurrentSetupStep(player)
-  step,err := session.findNextUndoneSetupStep(player)
-  if nil != err {
-    return step, err
-  }
-  session.SetupAssignments[player] = append(session.SetupAssignments[player], step)
-
-  return step, nil
+  return step
 }
-
-func (session *Session) PrintSetupSteps() {
-  for _,step := range session.SetupSteps {
-    fmt.Printf("%s\t%t\n", step.Rule().Description, step.Done())
-  }
-  fmt.Println("---")
-}
-
-func (session *Session) PrintStepAssignments() {
-  for _,player := range session.Players {
-    fmt.Printf("-- %d steps for %s\n", len(session.SetupAssignments[player]), player)
-    for _,step := range session.SetupAssignments[player] {
-      fmt.Printf("%s", step.Rule().Description)
-      if "Each player" == step.Rule().Arity {
-        fmt.Println(" *")
-      } else {
-        fmt.Println()
-      }
-    }
-  }
-}
-

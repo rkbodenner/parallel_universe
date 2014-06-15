@@ -7,6 +7,11 @@ import (
   "github.com/rkbodenner/parallel_universe/session"
 )
 
+func step(session *session.Session, player *game.Player) {
+  fmt.Printf("%s\t(%s)\n", session.Step(player), player.Name)
+  session.Step(player).Finish()
+}
+
 func main() {
   var players = []*game.Player{
     &game.Player{1, "Player One"},
@@ -17,16 +22,15 @@ func main() {
 
   fmt.Println("game on")
 
-  session.NextStep(session.Players[0])
-  session.NextStep(session.Players[1])
-  session.NextStep(session.Players[0])
-  session.NextStep(session.Players[1])
-  session.NextStep(session.Players[0])
-  session.NextStep(session.Players[0])
-  session.NextStep(session.Players[0])
-  session.NextStep(session.Players[1])
-  session.NextStep(session.Players[0])
-  session.PrintStepAssignments()
+  step(session, players[0])
+  step(session, players[0])
+  step(session, players[1])
+  step(session, players[0])
+  step(session, players[1])
+  step(session, players[0])
+  step(session, players[1])
+  step(session, players[1])
+  step(session, players[0])
 
   fmt.Println()
   game.PrintSetupRules()
