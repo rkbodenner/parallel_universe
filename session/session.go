@@ -58,14 +58,15 @@ func (session *Session) findNextUndoneSetupStep(player *game.Player) (game.Setup
 }
 
 func (session *Session) Step(player *game.Player) game.SetupStep {
-  step,assigned := session.SetupAssignments.Get(player)
-  if !assigned || (assigned && step.IsDone()) {
+  step,hasAssignment := session.SetupAssignments.Get(player)
+  if !hasAssignment || (hasAssignment && step.IsDone()) {
     nextStep,error := session.findNextUndoneSetupStep(player)
     if ( error != nil ) {
       fmt.Println(error.Error())
       return step
     }
     session.SetupAssignments.Set(player, nextStep)
+    delete(session.freeSetupSteps, nextStep)
     return nextStep
   }
   return step
