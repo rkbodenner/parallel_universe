@@ -48,9 +48,27 @@ func NewSession(g *game.Game, players []*game.Player) *Session {
   }
 }
 
+func (session *Session) IsRuleDone(rule *game.SetupRule) bool {
+  for _,step := range session.SetupSteps {
+    if step.GetRule().Description == rule.Description && !step.IsDone() {
+      return false
+    }
+  }
+  return true
+}
+
+func (session *Session) AreStepDependenciesDone(step game.SetupStep) bool {
+  for _,dep := range step.GetRule().Dependencies {
+    if !session.IsRuleDone(dep) {
+      return false
+    }
+  }
+  return true
+}
+
 func (session *Session) findNextUndoneSetupStep(player *game.Player) (game.SetupStep, error) {
   for step,_ := range session.freeSetupSteps {
-    if step.CanBeOwnedBy(player) && !step.IsDone() {
+    if step.CanBeOwnedBy(player) && !step.IsDone() && session.AreStepDependenciesDone(step) {
       return step, nil
     }
   }

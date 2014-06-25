@@ -6,8 +6,8 @@ import (
 
 func NewTicTacToe() *game.Game {
   var setup = []game.SetupRule{
-    {"Draw 3x3 grid", "Once"},
-    {"Choose X or O", "Each player"},
+    {"Draw 3x3 grid", "Once", []*game.SetupRule{}},
+    {"Choose X or O", "Each player", []*game.SetupRule{}},
   }
 
   return game.NewGame("Tic-Tac-Toe", setup)
@@ -15,14 +15,14 @@ func NewTicTacToe() *game.Game {
 
 func NewForbiddenIsland() *game.Game {
   var setup = []game.SetupRule{
-    {"Create Forbidden Island", "Once"},
-    {"Place the treasures", "Once"},
-    {"Divide the cards", "Once"},
-    {"The island starts to sink", "Once"},
-    {"Deal Adventurer cards", "Once"},
-    {"Place Adventurer pawn", "Each player"},
-    {"Hand out Treasure deck cards", "Once"},
-    {"Set the water level", "Once"},
+    {"Create Forbidden Island", "Once", []*game.SetupRule{}},
+    {"Place the treasures", "Once", []*game.SetupRule{}},
+    {"Divide the cards", "Once", []*game.SetupRule{}},
+    {"The island starts to sink", "Once", []*game.SetupRule{}},
+    {"Deal Adventurer cards", "Once", []*game.SetupRule{}},
+    {"Place Adventurer pawn", "Each player", []*game.SetupRule{}},
+    {"Hand out Treasure deck cards", "Once", []*game.SetupRule{}},
+    {"Set the water level", "Once", []*game.SetupRule{}},
   }
 
   return game.NewGame("Forbidden Island", setup)

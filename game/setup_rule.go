@@ -7,6 +7,7 @@ import (
 type SetupRule struct {
   Description string
   Arity string
+  Dependencies []*SetupRule
 }
 
 type SetupStep interface {

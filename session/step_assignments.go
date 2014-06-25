@@ -9,6 +9,8 @@ import (
 type StepAssignments interface {
   Get(*game.Player) (game.SetupStep,bool)
   Set(*game.Player, game.SetupStep)
+
+  GetAssignees(*game.SetupRule) []*game.Player
 }
 
 type StepMap struct {
@@ -26,6 +28,16 @@ func (m *StepMap) Get(player *game.Player) (game.SetupStep, bool) {
 
 func (m *StepMap) Set(player *game.Player, step game.SetupStep) {
   m.stepMap[player] = step
+}
+
+func (m *StepMap) GetAssignees(rule *game.SetupRule) []*game.Player {
+  playersAssigned := make([]*game.Player, 0)
+  for player,step := range m.stepMap {
+    if step.GetRule().Description == rule.Description {
+      playersAssigned = append(playersAssigned, player)
+    }
+  }
+  return playersAssigned
 }
 
 func (m *StepMap) MarshalJSON() ([]byte, error) {
