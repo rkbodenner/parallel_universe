@@ -7,10 +7,10 @@ import (
 type Game struct {
   Id uint `json:"id"`
   Name string `json:"name"`
-  SetupRules []SetupRule
+  SetupRules []*SetupRule
 }
 
-func NewGame(name string, rules []SetupRule) *Game {
+func NewGame(name string, rules []*SetupRule) *Game {
   return &Game{
     Name: name,
     SetupRules: rules,

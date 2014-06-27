@@ -9,8 +9,8 @@ import (
 )
 
 func TestNewSessionEachPlayerAssignment(t *testing.T) {
-  rules := []game.SetupRule{
-    *game.NewSetupRule("Only step", "Each player"),
+  rules := []*game.SetupRule{
+    game.NewSetupRule("Only step", "Each player"),
   }
   players := []*game.Player{
     &game.Player{1, "Alice"},
@@ -83,7 +83,7 @@ func TestStepHonorsDependencies(t *testing.T) {
     &game.Player{1, "Alice"},
     &game.Player{2, "Bob"},
   }
-  g := game.NewGame("war", []game.SetupRule{*rule0, *rule1, *rule2})
+  g := game.NewGame("war", []*game.SetupRule{rule0, rule1, rule2})
   session := NewSession(g, players)
 
   states := make(map[*game.SetupRule][]stepState)
@@ -153,9 +153,9 @@ func TestStepHonorsDependencies(t *testing.T) {
 }
 
 func TestStepToLastStep(t *testing.T) {
-  rules := []game.SetupRule{
+  rules := []*game.SetupRule{
     // First, last, and only step
-    *game.NewSetupRule("Only step", "Each player"),
+    game.NewSetupRule("Only step", "Each player"),
   }
   players := []*game.Player{
     &game.Player{1, "Alice"},

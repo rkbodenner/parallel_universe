@@ -13,7 +13,7 @@ func TestGetAssignees(t *testing.T) {
 
   assignments := NewStepMap()
   var step game.SetupStep
-  step,_ = game.NewGlobalSetupStep(*r1)
+  step,_ = game.NewGlobalSetupStep(r1)
   assignments.Set(&p1, step)
 
   var assignees []*game.Player
@@ -26,9 +26,9 @@ func TestGetAssignees(t *testing.T) {
     t.Fatal("Player 1 should be the assignee")
   }
 
-  step,_ = game.NewSinglePlayerSetupStep(*r2, &p1)
+  step,_ = game.NewSinglePlayerSetupStep(r2, &p1)
   assignments.Set(&p1, step)
-  step,_ = game.NewSinglePlayerSetupStep(*r2, &p2)
+  step,_ = game.NewSinglePlayerSetupStep(r2, &p2)
   assignments.Set(&p2, step)
 
   assignees = assignments.GetAssignees(r2)

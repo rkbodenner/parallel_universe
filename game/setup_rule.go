@@ -15,7 +15,7 @@ func NewSetupRule(desc string, arity string, deps ...*SetupRule) *SetupRule {
 }
 
 type SetupStep interface {
-  GetRule() SetupRule
+  GetRule() *SetupRule
   GetOwner() *Player
   CanBeOwnedBy(*Player) bool
   Finish()
@@ -25,19 +25,19 @@ type SetupStep interface {
 }
 
 type SinglePlayerSetupStep struct {
-  Rule SetupRule
+  Rule *SetupRule
   Owner *Player
   Done bool
 }
 
-func NewSinglePlayerSetupStep(rule SetupRule, owner *Player) (*SinglePlayerSetupStep, error) {
+func NewSinglePlayerSetupStep(rule *SetupRule, owner *Player) (*SinglePlayerSetupStep, error) {
   if "Each player" != rule.Arity {
     return nil, fmt.Errorf("Setup rule must be for each player")
   }
   return &SinglePlayerSetupStep{rule, owner, false}, nil
 }
 
-func (step *SinglePlayerSetupStep) GetRule() SetupRule {
+func (step *SinglePlayerSetupStep) GetRule() *SetupRule {
   return step.Rule
 }
 
@@ -63,18 +63,18 @@ func (step *SinglePlayerSetupStep) String() string {
 
 
 type GlobalSetupStep struct {
-  Rule SetupRule
+  Rule *SetupRule
   Done bool
 }
 
-func NewGlobalSetupStep(rule SetupRule) (*GlobalSetupStep, error) {
+func NewGlobalSetupStep(rule *SetupRule) (*GlobalSetupStep, error) {
   if "Once" != rule.Arity {
     return nil, fmt.Errorf("Setup rule must be done once")
   }
   return &GlobalSetupStep{rule, false}, nil
 }
 
-func (step *GlobalSetupStep) GetRule() SetupRule {
+func (step *GlobalSetupStep) GetRule() *SetupRule {
   return step.Rule
 }
 
