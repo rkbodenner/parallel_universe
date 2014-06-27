@@ -10,7 +10,7 @@ import (
 
 func TestNewSessionEachPlayerAssignment(t *testing.T) {
   rules := []game.SetupRule{
-    game.SetupRule{"Only step", "Each player", nil},
+    *game.NewSetupRule("Only step", "Each player"),
   }
   players := []*game.Player{
     &game.Player{1, "Alice"},
@@ -75,87 +75,87 @@ func verifyStates(t *testing.T, session *Session, stepStates map[*game.SetupRule
 }
 
 func TestStepHonorsDependencies(t *testing.T) {
-  rule0 := game.SetupRule{"0", "Once", nil}
-  rule1 := game.SetupRule{"1", "Once", []*game.SetupRule{&rule0}}
-  rule2 := game.SetupRule{"2", "Once", []*game.SetupRule{&rule1}}
+  rule0 := game.NewSetupRule("0", "Once")
+  rule1 := game.NewSetupRule("1", "Once", rule0)
+  rule2 := game.NewSetupRule("2", "Once", rule1)
 
   players := []*game.Player{
     &game.Player{1, "Alice"},
     &game.Player{2, "Bob"},
   }
-  g := game.NewGame("war", []game.SetupRule{rule0, rule1, rule2})
+  g := game.NewGame("war", []game.SetupRule{*rule0, *rule1, *rule2})
   session := NewSession(g, players)
 
   states := make(map[*game.SetupRule][]stepState)
   var step game.SetupStep
 
-  states[&rule0] = []stepState{undone, unassigned}
-  states[&rule1] = []stepState{undone, unassigned}
-  states[&rule2] = []stepState{undone, unassigned}
+  states[rule0] = []stepState{undone, unassigned}
+  states[rule1] = []stepState{undone, unassigned}
+  states[rule2] = []stepState{undone, unassigned}
   verifyStates(t, session, states)
 
   step = session.Step(players[0])
-  states[&rule0] = []stepState{undone, assigned}
-  states[&rule1] = []stepState{undone, unassigned}
-  states[&rule2] = []stepState{undone, unassigned}
+  states[rule0] = []stepState{undone, assigned}
+  states[rule1] = []stepState{undone, unassigned}
+  states[rule2] = []stepState{undone, unassigned}
   verifyStates(t, session, states)
 
   // No change
   session.Step(players[0])
-  states[&rule0] = []stepState{undone, assigned}
-  states[&rule1] = []stepState{undone, unassigned}
-  states[&rule2] = []stepState{undone, unassigned}
+  states[rule0] = []stepState{undone, assigned}
+  states[rule1] = []stepState{undone, unassigned}
+  states[rule2] = []stepState{undone, unassigned}
   verifyStates(t, session, states)
 
   // No change
   session.Step(players[1])
-  states[&rule0] = []stepState{undone, assigned}
-  states[&rule1] = []stepState{undone, unassigned}
-  states[&rule2] = []stepState{undone, unassigned}
+  states[rule0] = []stepState{undone, assigned}
+  states[rule1] = []stepState{undone, unassigned}
+  states[rule2] = []stepState{undone, unassigned}
   verifyStates(t, session, states)
 
   step.Finish()
-  states[&rule0] = []stepState{done, assigned}
-  states[&rule1] = []stepState{undone, unassigned}
-  states[&rule2] = []stepState{undone, unassigned}
+  states[rule0] = []stepState{done, assigned}
+  states[rule1] = []stepState{undone, unassigned}
+  states[rule2] = []stepState{undone, unassigned}
   verifyStates(t, session, states)
 
   step = session.Step(players[0])
-  states[&rule0] = []stepState{done, unassigned}
-  states[&rule1] = []stepState{undone, assigned}
-  states[&rule2] = []stepState{undone, unassigned}
+  states[rule0] = []stepState{done, unassigned}
+  states[rule1] = []stepState{undone, assigned}
+  states[rule2] = []stepState{undone, unassigned}
   verifyStates(t, session, states)
 
   step.Finish()
-  states[&rule0] = []stepState{done, unassigned}
-  states[&rule1] = []stepState{done, assigned}
-  states[&rule2] = []stepState{undone, unassigned}
+  states[rule0] = []stepState{done, unassigned}
+  states[rule1] = []stepState{done, assigned}
+  states[rule2] = []stepState{undone, unassigned}
   verifyStates(t, session, states)
 
   step = session.Step(players[1])
-  states[&rule0] = []stepState{done, unassigned}
-  states[&rule1] = []stepState{done, assigned}
-  states[&rule2] = []stepState{undone, assigned}
+  states[rule0] = []stepState{done, unassigned}
+  states[rule1] = []stepState{done, assigned}
+  states[rule2] = []stepState{undone, assigned}
   verifyStates(t, session, states)
 
   // No change
   session.Step(players[0])
-  states[&rule0] = []stepState{done, unassigned}
-  states[&rule1] = []stepState{done, assigned}
-  states[&rule2] = []stepState{undone, assigned}
+  states[rule0] = []stepState{done, unassigned}
+  states[rule1] = []stepState{done, assigned}
+  states[rule2] = []stepState{undone, assigned}
   verifyStates(t, session, states)
 
   step.Finish()
-  states[&rule0] = []stepState{done, unassigned}
-  states[&rule1] = []stepState{done, assigned}
-  states[&rule2] = []stepState{done, assigned}
+  states[rule0] = []stepState{done, unassigned}
+  states[rule1] = []stepState{done, assigned}
+  states[rule2] = []stepState{done, assigned}
   verifyStates(t, session, states)
 }
 
 func TestStepToLastStep(t *testing.T) {
   rules := []game.SetupRule{
     // First, last, and only step
-    game.SetupRule{"Only step", "Each player", nil},
+    *game.NewSetupRule("Only step", "Each player"),
   }
   players := []*game.Player{
     &game.Player{1, "Alice"},

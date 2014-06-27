@@ -10,6 +10,10 @@ type SetupRule struct {
   Dependencies []*SetupRule
 }
 
+func NewSetupRule(desc string, arity string, deps ...*SetupRule) *SetupRule {
+  return &SetupRule{desc, arity, deps}
+}
+
 type SetupStep interface {
   GetRule() SetupRule
   GetOwner() *Player
