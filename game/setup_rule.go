@@ -5,13 +5,14 @@ import (
 )
 
 type SetupRule struct {
+  Id int
   Description string
   Arity string
   Dependencies []*SetupRule
 }
 
 func NewSetupRule(desc string, arity string, deps ...*SetupRule) *SetupRule {
-  return &SetupRule{desc, arity, deps}
+  return &SetupRule{0, desc, arity, deps}
 }
 
 type SetupStep interface {
