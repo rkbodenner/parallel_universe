@@ -80,7 +80,7 @@ func (step *GlobalSetupStep) GetRule() *SetupRule {
 }
 
 func (step *GlobalSetupStep) GetOwner() *Player {
-  return &Player{0, "global"}
+  return nil
 }
 
 func (step *GlobalSetupStep) CanBeOwnedBy(player *Player) bool {

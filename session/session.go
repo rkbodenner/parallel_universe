@@ -92,6 +92,10 @@ func (session *Session) Step(player *game.Player) game.SetupStep {
 
 func (session *Session) Print() {
   for _,step := range session.SetupSteps {
-    fmt.Printf("%s (%s) %t\n", step, step.GetOwner().Name, step.IsDone())
+    ownerName := ""
+    if nil != step.GetOwner() {
+      ownerName = step.GetOwner().Name
+    }
+    fmt.Printf("%s (%s) %t\n", step, ownerName, step.IsDone())
   }
 }
