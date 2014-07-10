@@ -16,20 +16,22 @@ type Session struct {
 
 func NewSession(g *game.Game, players []*game.Player) *Session {
   setupSteps := make([]game.SetupStep, 0)
-  for _,rule := range g.SetupRules {
-    if "Once" == rule.Arity {
-      step, err := game.NewGlobalSetupStep(rule)
-      if nil != err {
-        fmt.Println(err)
-      }
-      setupSteps = append(setupSteps, step)
-    } else if "Each player" == rule.Arity {
-      for _,p := range players {
-        step, err := game.NewSinglePlayerSetupStep(rule, p)
+  if nil != g {
+    for _,rule := range g.SetupRules {
+      if "Once" == rule.Arity {
+        step, err := game.NewGlobalSetupStep(rule)
         if nil != err {
           fmt.Println(err)
         }
         setupSteps = append(setupSteps, step)
+      } else if "Each player" == rule.Arity {
+        for _,p := range players {
+          step, err := game.NewSinglePlayerSetupStep(rule, p)
+          if nil != err {
+            fmt.Println(err)
+          }
+          setupSteps = append(setupSteps, step)
+        }
       }
     }
   }
