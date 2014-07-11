@@ -12,7 +12,7 @@ func TestGetAssignees(t *testing.T) {
   r2 := game.NewSetupRule("2", "Each player")
 
   assignments := NewStepMap()
-  var step game.SetupStep
+  var step *game.SetupStep
   step,_ = game.NewGlobalSetupStep(r1)
   assignments.Set(&p1, step)
 

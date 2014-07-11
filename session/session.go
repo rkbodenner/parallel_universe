@@ -10,12 +10,12 @@ type Session struct {
   Game *game.Game
   Players []*game.Player
   SetupAssignments StepAssignments
-  SetupSteps []game.SetupStep
-  freeSetupSteps map[game.SetupStep]bool
+  SetupSteps []*game.SetupStep
+  freeSetupSteps map[*game.SetupStep]bool
 }
 
 func NewSession(g *game.Game, players []*game.Player) *Session {
-  setupSteps := make([]game.SetupStep, 0)
+  setupSteps := make([]*game.SetupStep, 0)
   if nil != g {
     for _,rule := range g.SetupRules {
       if "Once" == rule.Arity {
@@ -36,7 +36,7 @@ func NewSession(g *game.Game, players []*game.Player) *Session {
     }
   }
 
-  freeSetupSteps := make(map[game.SetupStep]bool)
+  freeSetupSteps := make(map[*game.SetupStep]bool)
   for _,step := range setupSteps {
     freeSetupSteps[step] = true
   }
@@ -52,15 +52,15 @@ func NewSession(g *game.Game, players []*game.Player) *Session {
 
 func (session *Session) IsRuleDone(rule *game.SetupRule) bool {
   for _,step := range session.SetupSteps {
-    if step.GetRule().Description == rule.Description && !step.IsDone() {
+    if step.Rule.Description == rule.Description && !step.Done {
       return false
     }
   }
   return true
 }
 
-func (session *Session) AreStepDependenciesDone(step game.SetupStep) bool {
-  for _,dep := range step.GetRule().Dependencies {
+func (session *Session) AreStepDependenciesDone(step *game.SetupStep) bool {
+  for _,dep := range step.Rule.Dependencies {
     if !session.IsRuleDone(dep) {
       return false
     }
@@ -68,18 +68,18 @@ func (session *Session) AreStepDependenciesDone(step game.SetupStep) bool {
   return true
 }
 
-func (session *Session) findNextUndoneSetupStep(player *game.Player) (game.SetupStep, error) {
+func (session *Session) findNextUndoneSetupStep(player *game.Player) (*game.SetupStep, error) {
   for step,_ := range session.freeSetupSteps {
-    if step.CanBeOwnedBy(player) && !step.IsDone() && session.AreStepDependenciesDone(step) {
+    if step.CanBeOwnedBy(player) && !step.Done && session.AreStepDependenciesDone(step) {
       return step, nil
     }
   }
   return nil, fmt.Errorf("No undone steps available for %s", player.Name)
 }
 
-func (session *Session) Step(player *game.Player) game.SetupStep {
+func (session *Session) Step(player *game.Player) *game.SetupStep {
   step,hasAssignment := session.SetupAssignments.Get(player)
-  if !hasAssignment || (hasAssignment && step.IsDone()) {
+  if !hasAssignment || (hasAssignment && step.Done) {
     nextStep,error := session.findNextUndoneSetupStep(player)
     if ( error != nil ) {
       fmt.Println(error.Error())
@@ -95,9 +95,9 @@ func (session *Session) Step(player *game.Player) game.SetupStep {
 func (session *Session) Print() {
   for _,step := range session.SetupSteps {
     ownerName := ""
-    if nil != step.GetOwner() {
-      ownerName = step.GetOwner().Name
+    if nil != step.Owner {
+      ownerName = step.Owner.Name
     }
-    fmt.Printf("%s (%s) %t\n", step, ownerName, step.IsDone())
+    fmt.Printf("%s (%s) %t\n", step, ownerName, step.Done)
   }
 }
