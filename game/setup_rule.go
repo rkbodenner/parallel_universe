@@ -36,7 +36,7 @@ func NewSinglePlayerSetupStep(rule *SetupRule, owner *Player) (*SetupStep, error
 }
 
 func (step *SetupStep) CanBeOwnedBy(player *Player) bool {
-  return step.Owner == nil || player == step.Owner
+  return step.Owner == nil || player.Id == step.Owner.Id
 }
 
 func (step *SetupStep) Finish() {
