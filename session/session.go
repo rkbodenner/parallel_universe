@@ -92,6 +92,13 @@ func (session *Session) Step(player *game.Player) *game.SetupStep {
   return step
 }
 
+func (session *Session) StepAllPlayers() error {
+  for _, player := range session.Players {
+    session.Step(player)
+  }
+  return nil
+}
+
 func (session *Session) Print() {
   for _,step := range session.SetupSteps {
     ownerName := ""
