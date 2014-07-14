@@ -10,6 +10,7 @@ type StepAssignments interface {
   Get(*game.Player) (*game.SetupStep,bool)
   Set(*game.Player, *game.SetupStep)
 
+  IsAssigned(*game.SetupStep) bool
   GetAssignees(*game.SetupRule) []*game.Player
 }
 
@@ -28,6 +29,16 @@ func (m *StepMap) Get(player *game.Player) (*game.SetupStep, bool) {
 
 func (m *StepMap) Set(player *game.Player, step *game.SetupStep) {
   m.stepMap[player] = step
+}
+
+func (m *StepMap) IsAssigned(step *game.SetupStep) bool {
+  assignees := m.GetAssignees(step.Rule)
+  for _, assignee := range assignees {
+    if step.CanBeOwnedBy(assignee) {
+      return true
+    }
+  }
+  return false
 }
 
 func (m *StepMap) GetAssignees(rule *game.SetupRule) []*game.Player {

@@ -11,7 +11,6 @@ type Session struct {
   Players []*game.Player
   SetupAssignments StepAssignments
   SetupSteps []*game.SetupStep
-  freeSetupSteps map[*game.SetupStep]bool
 }
 
 func NewSession(g *game.Game, players []*game.Player) *Session {
@@ -36,17 +35,11 @@ func NewSession(g *game.Game, players []*game.Player) *Session {
     }
   }
 
-  freeSetupSteps := make(map[*game.SetupStep]bool)
-  for _,step := range setupSteps {
-    freeSetupSteps[step] = true
-  }
-
   return &Session{
     Game: g,
     Players: players,
     SetupAssignments: NewStepMap(),
     SetupSteps: setupSteps,
-    freeSetupSteps: freeSetupSteps,
   }
 }
 
@@ -69,8 +62,8 @@ func (session *Session) AreStepDependenciesDone(step *game.SetupStep) bool {
 }
 
 func (session *Session) findNextUndoneSetupStep(player *game.Player) (*game.SetupStep, error) {
-  for step,_ := range session.freeSetupSteps {
-    if step.CanBeOwnedBy(player) && !step.Done && session.AreStepDependenciesDone(step) {
+  for _, step := range session.SetupSteps {
+    if !session.SetupAssignments.IsAssigned(step) && step.CanBeOwnedBy(player) && !step.Done && session.AreStepDependenciesDone(step) {
       return step, nil
     }
   }
@@ -86,7 +79,6 @@ func (session *Session) Step(player *game.Player) *game.SetupStep {
       return step
     }
     session.SetupAssignments.Set(player, nextStep)
-    delete(session.freeSetupSteps, nextStep)
     return nextStep
   }
   return step
