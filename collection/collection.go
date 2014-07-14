@@ -15,15 +15,20 @@ func NewTicTacToe() *game.Game {
 
 func NewForbiddenIsland() *game.Game {
   var setup = []*game.SetupRule{
-    game.NewSetupRule("Create Forbidden Island", "Once"),
+    game.NewSetupRule("Create Forbidden Island", "Once"),     //0
     game.NewSetupRule("Place the treasures", "Once"),
-    game.NewSetupRule("Divide the cards", "Once"),
-    game.NewSetupRule("The island starts to sink", "Once"),
-    game.NewSetupRule("Deal Adventurer cards", "Once"),
-    game.NewSetupRule("Place Adventurer pawn", "Each player"),
-    game.NewSetupRule("Hand out Treasure deck cards", "Once"),
+    game.NewSetupRule("Divide the cards", "Once"),            //2
+    game.NewSetupRule("The island starts to sink", "Once"),   //3
+    game.NewSetupRule("Deal Adventurer cards", "Once"),       //4
+    game.NewSetupRule("Place Adventurer pawn", "Each player"),//5
+    game.NewSetupRule("Hand out Treasure deck cards", "Once"),//6
     game.NewSetupRule("Set the water level", "Once"),
   }
+  setup[3].Dependencies = []SetupRule{setup[0]}
+  setup[3].Dependencies = []SetupRule{setup[2]}
+  setup[4].Dependencies = []SetupRule{setup[2]}
+  setup[5].Dependencies = []SetupRule{setup[4]}
+  setup[6].Dependencies = []SetupRule{setup[2]}
 
   return game.NewGame("Forbidden Island", setup)
 }
