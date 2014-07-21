@@ -8,12 +8,16 @@ type Game struct {
   Id uint `json:"id"`
   Name string `json:"name"`
   SetupRules []*SetupRule
+  MinPlayers int
+  MaxPlayers int
 }
 
-func NewGame(name string, rules []*SetupRule) *Game {
+func NewGame(name string, rules []*SetupRule, minPlayers int, maxPlayers int) *Game {
   return &Game{
     Name: name,
     SetupRules: rules,
+    MinPlayers: minPlayers,
+    MaxPlayers: maxPlayers,
   }
 }
 

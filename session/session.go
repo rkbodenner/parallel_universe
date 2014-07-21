@@ -1,6 +1,7 @@
 package session
 
 import (
+  "errors"
   "fmt"
   "github.com/rkbodenner/parallel_universe/game"
 )
@@ -13,24 +14,41 @@ type Session struct {
   SetupSteps []*game.SetupStep
 }
 
-func NewSession(g *game.Game, players []*game.Player) *Session {
+func NewEmptySession() (*Session) {
+  return &Session{
+    Game: nil,
+    Players: make([]*game.Player, 0),
+    SetupAssignments: NewStepMap(),
+    SetupSteps: make([]*game.SetupStep, 0),
+  }
+}
+
+func NewSession(g *game.Game, players []*game.Player) (*Session, error) {
+  if nil == g {
+    return nil, errors.New("Session must have a non-nil Game")
+  }
+  if len(players) < g.MinPlayers {
+    return nil, errors.New(fmt.Sprintf("Game requires at least %d players, but %d were given", g.MinPlayers, len(players)))
+  }
+  if len(players) > g.MaxPlayers {
+    return nil, errors.New(fmt.Sprintf("Game requires at most %d players, but %d were given", g.MaxPlayers, len(players)))
+  }
+
   setupSteps := make([]*game.SetupStep, 0)
-  if nil != g {
-    for _,rule := range g.SetupRules {
-      if "Once" == rule.Arity {
-        step, err := game.NewGlobalSetupStep(rule)
+  for _,rule := range g.SetupRules {
+    if "Once" == rule.Arity {
+      step, err := game.NewGlobalSetupStep(rule)
+      if nil != err {
+        return nil, err
+      }
+      setupSteps = append(setupSteps, step)
+    } else if "Each player" == rule.Arity {
+      for _,p := range players {
+        step, err := game.NewSinglePlayerSetupStep(rule, p)
         if nil != err {
-          fmt.Println(err)
+          return nil, err
         }
         setupSteps = append(setupSteps, step)
-      } else if "Each player" == rule.Arity {
-        for _,p := range players {
-          step, err := game.NewSinglePlayerSetupStep(rule, p)
-          if nil != err {
-            fmt.Println(err)
-          }
-          setupSteps = append(setupSteps, step)
-        }
       }
     }
   }
@@ -40,7 +58,7 @@ func NewSession(g *game.Game, players []*game.Player) *Session {
     Players: players,
     SetupAssignments: NewStepMap(),
     SetupSteps: setupSteps,
-  }
+  }, nil
 }
 
 func (session *Session) IsRuleDone(rule *game.SetupRule) bool {

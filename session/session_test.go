@@ -8,6 +8,33 @@ import (
   "github.com/rkbodenner/parallel_universe/game"
 )
 
+func TestNewSessionEnforcePlayerLimits(t *testing.T) {
+  players := []*game.Player{
+    &game.Player{1, "Alice"},
+    &game.Player{2, "Bob"},
+    &game.Player{3, "Carol"},
+  }
+  g := game.NewGame("war", nil, 1, len(players) - 1)
+
+  var session *Session
+  var err error
+
+  session, err = NewSession(g, []*game.Player{})
+  if err == nil || session != nil {
+    t.Fatal("Cannot create a session with less than the minimum number of players")
+  }
+
+  session, err = NewSession(g, players[:0])
+  if err != nil && session != nil {
+    t.Fatal("Unexpected error creating session")
+  }
+
+  session, err = NewSession(g, players[0:])
+  if err == nil || session != nil {
+    t.Fatal("Cannot create a session with more than the minimum number of players")
+  }
+}
+
 func TestNewSessionEachPlayerAssignment(t *testing.T) {
   rules := []*game.SetupRule{
     game.NewSetupRule("Only step", "Each player"),
@@ -16,8 +43,11 @@ func TestNewSessionEachPlayerAssignment(t *testing.T) {
     &game.Player{1, "Alice"},
     &game.Player{2, "Bob"},
   }
-  g := game.NewGame("war", rules)
-  session := NewSession(g, players)
+  g := game.NewGame("war", rules, len(players), len(players))
+  session, err := NewSession(g, players)
+  if nil != err {
+    t.Fatal("Error creating session")
+  }
 
   var aliceStep *game.SetupStep
   var bobStep *game.SetupStep
@@ -83,8 +113,11 @@ func TestStepHonorsDependencies(t *testing.T) {
     &game.Player{1, "Alice"},
     &game.Player{2, "Bob"},
   }
-  g := game.NewGame("war", []*game.SetupRule{rule0, rule1, rule2})
-  session := NewSession(g, players)
+  g := game.NewGame("war", []*game.SetupRule{rule0, rule1, rule2}, len(players), len(players))
+  session, err := NewSession(g, players)
+  if nil != err {
+    t.Fatal("Error creating session")
+  }
 
   states := make(map[*game.SetupRule][]stepState)
   var step *game.SetupStep
@@ -161,8 +194,11 @@ func TestStepToLastStep(t *testing.T) {
     &game.Player{1, "Alice"},
     &game.Player{2, "Bob"},
   }
-  g := game.NewGame("war", rules)
-  session := NewSession(g, players)
+  g := game.NewGame("war", rules, len(players), len(players))
+  session, err := NewSession(g, players)
+  if nil != err {
+    t.Fatal("Error creating session")
+  }
 
   var next *game.SetupStep
   next = session.Step(players[0])
