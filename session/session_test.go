@@ -1,6 +1,7 @@
 package session
 
 import (
+  "fmt"
   "reflect"
   "runtime"
   "strings"
@@ -93,12 +94,12 @@ func unassigned(rule *game.SetupRule, session *Session) bool {
   return !assigned(rule, session)
 }
 
-func verifyStates(t *testing.T, session *Session, stepStates map[*game.SetupRule][]stepState) {
+func verifyStates(index int, t *testing.T, session *Session, stepStates map[*game.SetupRule][]stepState) {
   for rule,states := range stepStates {
     for _,state := range states {
       if !state(rule, session) {
         fnNameParts := strings.Split(runtime.FuncForPC(reflect.ValueOf(state).Pointer()).Name(), ".")
-        t.Fatalf("Rule %s expected to be %s", rule.Description, fnNameParts[len(fnNameParts)-1])
+        t.Fatalf("%d: Rule %s expected to be %s", index, rule.Description, fnNameParts[len(fnNameParts)-1])
       }
     }
   }
@@ -106,8 +107,11 @@ func verifyStates(t *testing.T, session *Session, stepStates map[*game.SetupRule
 
 func TestStepHonorsDependencies(t *testing.T) {
   rule0 := game.NewSetupRule("0", "Once")
+  rule0.Id = 0
   rule1 := game.NewSetupRule("1", "Once", rule0)
+  rule1.Id = 1
   rule2 := game.NewSetupRule("2", "Once", rule1)
+  rule2.Id = 2
 
   players := []*game.Player{
     &game.Player{1, "Alice"},
@@ -125,64 +129,76 @@ func TestStepHonorsDependencies(t *testing.T) {
   states[rule0] = []stepState{undone, unassigned}
   states[rule1] = []stepState{undone, unassigned}
   states[rule2] = []stepState{undone, unassigned}
-  verifyStates(t, session, states)
+  verifyStates(1, t, session, states)
 
   step = session.Step(players[0])
+  if step.Rule.Description != "0" {
+    t.Fatal(fmt.Sprintf("Step 0 should be the next step, but is %s", step.Rule.Description))
+  }
   states[rule0] = []stepState{undone, assigned}
   states[rule1] = []stepState{undone, unassigned}
   states[rule2] = []stepState{undone, unassigned}
-  verifyStates(t, session, states)
+  verifyStates(2, t, session, states)
 
   // No change
-  session.Step(players[0])
+  step = session.Step(players[0])
+  if step.Rule.Description != "0" {
+    t.Fatal(fmt.Sprintf("Step 0 should be the next step, but is %s", step.Rule.Description))
+  }
   states[rule0] = []stepState{undone, assigned}
   states[rule1] = []stepState{undone, unassigned}
   states[rule2] = []stepState{undone, unassigned}
-  verifyStates(t, session, states)
+  verifyStates(3, t, session, states)
 
-  // No change
-  session.Step(players[1])
+  // No change. Dependency is not yet done.
+  noStep := session.Step(players[1])
+  if noStep != nil {
+    t.Fatal("Step cannot yet be assigned")
+  }
   states[rule0] = []stepState{undone, assigned}
   states[rule1] = []stepState{undone, unassigned}
   states[rule2] = []stepState{undone, unassigned}
-  verifyStates(t, session, states)
+  verifyStates(4, t, session, states)
 
   step.Finish()
   states[rule0] = []stepState{done, assigned}
   states[rule1] = []stepState{undone, unassigned}
   states[rule2] = []stepState{undone, unassigned}
-  verifyStates(t, session, states)
+  verifyStates(5, t, session, states)
 
   step = session.Step(players[0])
+  if step.Rule.Description != "1" {
+    t.Fatal(fmt.Sprintf("Step 1 should be the next step, but is %s", step.Rule.Description))
+  }
   states[rule0] = []stepState{done, unassigned}
   states[rule1] = []stepState{undone, assigned}
   states[rule2] = []stepState{undone, unassigned}
-  verifyStates(t, session, states)
+  verifyStates(6, t, session, states)
 
   step.Finish()
   states[rule0] = []stepState{done, unassigned}
   states[rule1] = []stepState{done, assigned}
   states[rule2] = []stepState{undone, unassigned}
-  verifyStates(t, session, states)
+  verifyStates(7, t, session, states)
 
   step = session.Step(players[1])
   states[rule0] = []stepState{done, unassigned}
   states[rule1] = []stepState{done, assigned}
   states[rule2] = []stepState{undone, assigned}
-  verifyStates(t, session, states)
+  verifyStates(8, t, session, states)
 
   // No change
   session.Step(players[0])
   states[rule0] = []stepState{done, unassigned}
   states[rule1] = []stepState{done, assigned}
   states[rule2] = []stepState{undone, assigned}
-  verifyStates(t, session, states)
+  verifyStates(9, t, session, states)
 
   step.Finish()
   states[rule0] = []stepState{done, unassigned}
   states[rule1] = []stepState{done, assigned}
   states[rule2] = []stepState{done, assigned}
-  verifyStates(t, session, states)
+  verifyStates(10, t, session, states)
 }
 
 func TestStepToLastStep(t *testing.T) {

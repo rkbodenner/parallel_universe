@@ -14,11 +14,15 @@ type Session struct {
   SetupSteps []*game.SetupStep
 }
 
+func newStepAssignments() StepAssignments {
+  return NewStepPlayerIdMap()
+}
+
 func NewEmptySession() (*Session) {
   return &Session{
     Game: nil,
     Players: make([]*game.Player, 0),
-    SetupAssignments: NewStepMap(),
+    SetupAssignments: newStepAssignments(),
     SetupSteps: make([]*game.SetupStep, 0),
   }
 }
@@ -56,7 +60,7 @@ func NewSession(g *game.Game, players []*game.Player) (*Session, error) {
   return &Session{
     Game: g,
     Players: players,
-    SetupAssignments: NewStepMap(),
+    SetupAssignments: newStepAssignments(),
     SetupSteps: setupSteps,
   }, nil
 }
@@ -80,8 +84,16 @@ func (session *Session) AreStepDependenciesDone(step *game.SetupStep) bool {
 }
 
 func (session *Session) findNextUndoneSetupStep(player *game.Player) (*game.SetupStep, error) {
+  var conditions [4]bool
   for _, step := range session.SetupSteps {
-    if !session.SetupAssignments.IsAssigned(step) && step.CanBeOwnedBy(player) && !step.Done && session.AreStepDependenciesDone(step) {
+    conditions = [4]bool{
+      !session.SetupAssignments.IsAssigned(step),
+      step.CanBeOwnedBy(player),
+      !step.Done,
+      session.AreStepDependenciesDone(step),
+    }
+    fmt.Printf("Rule %d available? [%t %t %t %t]\n", step.Rule.Id, conditions[0], conditions[1], conditions[2], conditions[3])
+    if conditions[0] && conditions[1] && conditions[2] && conditions[3] {
       return step, nil
     }
   }
