@@ -11,6 +11,7 @@ type StepAssignments interface {
   Set(*game.Player, *game.SetupStep)
 
   IsAssigned(*game.SetupStep) bool
+  GetAssignee(*game.SetupStep) *game.Player
   GetAssignees(*game.SetupRule) []*game.Player
 }
 
@@ -39,6 +40,15 @@ func (m *StepMap) IsAssigned(step *game.SetupStep) bool {
     }
   }
   return false
+}
+
+func (m *StepMap) GetAssignee(s *game.SetupStep) *game.Player {
+  for player,step := range m.stepMap {
+    if s.Equal(step) {
+      return player
+    }
+  }
+  return nil
 }
 
 func (m *StepMap) GetAssignees(rule *game.SetupRule) []*game.Player {

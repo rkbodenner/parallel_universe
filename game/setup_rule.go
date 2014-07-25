@@ -43,6 +43,20 @@ func (step *SetupStep) Finish() {
   step.Done = true
 }
 
+func (a *SetupStep) Equal(b *SetupStep) bool {
+  if a.Rule.Id == b.Rule.Id {
+    if a.Owner == nil && b.Owner == nil {
+      return true
+    }
+    if a.Owner != nil && b.Owner != nil {
+      if a.Owner.Id == b.Owner.Id {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 func (step *SetupStep) String() string {
   return fmt.Sprintf("%s", step.Rule.Description)
 }

@@ -115,6 +115,10 @@ func (session *Session) Print() {
     if nil != step.Owner {
       ownerName = step.Owner.Name
     }
-    fmt.Printf("%s (%s) %t\n", step, ownerName, step.Done)
+    assigneeName := ""
+    if assignee := session.SetupAssignments.GetAssignee(step); assignee != nil {
+      assigneeName = assignee.Name
+    }
+    fmt.Printf("%s (%s)<-(%s) %t\n", step, ownerName, assigneeName, step.Done)
   }
 }
