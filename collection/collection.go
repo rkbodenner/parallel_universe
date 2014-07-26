@@ -10,7 +10,7 @@ func NewTicTacToe() *game.Game {
     game.NewSetupRule("Choose X or O", "Each player"),
   }
 
-  return game.NewGame("Tic-Tac-Toe", setup)
+  return game.NewGame("Tic-Tac-Toe", setup, 2, 2)
 }
 
 func NewForbiddenIsland() *game.Game {
@@ -24,13 +24,12 @@ func NewForbiddenIsland() *game.Game {
     game.NewSetupRule("Hand out Treasure deck cards", "Once"),//6
     game.NewSetupRule("Set the water level", "Once"),
   }
-  setup[3].Dependencies = []SetupRule{setup[0]}
-  setup[3].Dependencies = []SetupRule{setup[2]}
-  setup[4].Dependencies = []SetupRule{setup[2]}
-  setup[5].Dependencies = []SetupRule{setup[4]}
-  setup[6].Dependencies = []SetupRule{setup[2]}
+  setup[3].Dependencies = []*game.SetupRule{setup[0], setup[2]}
+  setup[4].Dependencies = []*game.SetupRule{setup[2]}
+  setup[5].Dependencies = []*game.SetupRule{setup[4]}
+  setup[6].Dependencies = []*game.SetupRule{setup[2]}
 
-  return game.NewGame("Forbidden Island", setup)
+  return game.NewGame("Forbidden Island", setup, 2, 4)
 }
 
 type Collection struct {
