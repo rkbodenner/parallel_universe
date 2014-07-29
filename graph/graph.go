@@ -26,5 +26,5 @@ func PrintDot(g *game.Game) {
 }
 
 func main() {
-  PrintDot(collection.NewForbiddenIsland())
+  PrintDot(collection.NewOraEtLaboraShortMultiplayer())
 }

@@ -96,6 +96,7 @@ func NewCollection() *Collection {
     []*game.Game{
       NewTicTacToe(),
       NewForbiddenIsland(),
+      NewOraEtLaboraShortMultiplayer(),
     },
   }
 }
