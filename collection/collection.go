@@ -19,11 +19,20 @@ func NewForbiddenIsland() *game.Game {
     game.NewSetupRule("Place the treasures", "Once"),
     game.NewSetupRule("Divide the cards", "Once"),            //2
     game.NewSetupRule("The island starts to sink", "Once"),   //3
-    game.NewSetupRule("Deal Adventurer cards", "Once"),       //4
+    game.NewSetupRule("The Adventurers appear", "Once"),      //4
     game.NewSetupRule("Place Adventurer pawn", "Each player"),//5
     game.NewSetupRule("Hand out Treasure deck cards", "Once"),//6
     game.NewSetupRule("Set the water level", "Once"),
   }
+  setup[0].Details = "Shuffle the 24 Island tiles and randomly place them colorful-side-up into a 4x4 grid, then place 2 tiles next to each of the two middle tiles on every side of the square. Leave a small gap between the tiles."
+  setup[1].Details = "Place the 4 treasure figurines--The Earth Stone, The Statue of the Wind, The Crystal of Fire, and The Ocean's Chalice--anywhere off to the side of the island"
+  setup[2].Details = "Separate the cards into three decks according to the card backs: Flood deck (blue back), Treasure deck (red), and Adventurer cards (6 cards)"
+  setup[3].Details = "Shuffle the Flood deck and place it face down on one side of the island, forming the Flood draw pile. Draw the top 6 cards (1 at a time) and place them face up next to the draw pile, forming the Flood discard pile. For each card drawn, flip the corresponding Island tile over to its flooded (blue & white) side."
+  setup[4].Details = "Shuffle the Adventurer cards and randomly deal 1 to each player. Put undealt cards and their matching pawns back in the box."
+  setup[5].Details = "Take the pawn matching the color of your Adventurer card and place it on the corresponding Island tile. Look for the matching pawn icon in the lower right corner of the Gates and Fools' Landing tiles. It's OK to start on a flooded tile."
+  setup[6].Details = "Shuffle the Treasure deck and deal 2 cards to each player. Place your cards face up in front of you. If anyone gets a Waters Rise! card, give them a replacement and shuffle Waters Rise! back into the deck. Place the Treasure deck face down by one side of the island."
+  setup[7].Details = "Place the Water Level slider on the left side of the Water Meter board and set it to the difficulty level of your choice"
+
   setup[3].Dependencies = []*game.SetupRule{setup[0], setup[2]}
   setup[4].Dependencies = []*game.SetupRule{setup[2]}
   setup[5].Dependencies = []*game.SetupRule{setup[4]}
@@ -61,7 +70,7 @@ func NewOraEtLaboraShortMultiplayer() *game.Game {
   setup[1].Dependencies = []*game.SetupRule{setup[0]}
   setup[2].Details = "Place onto the board where the production wheel indicates 0 (clay, coins, grain, livestock, wood, peat, joker)"
   setup[2].Dependencies = []*game.SetupRule{setup[1]}
-  // FIXME: Player number variation
+  // TODO: Player number variation
   setup[3].Details = "3-player game: Remove the cards with a 4 or a 3+ in the lower right corner. 4-player game: Remove the cards with a 4 in the lower right corner. Turn each card so that the chosen country variant (France or Ireland) faces up. Sort the buildings into stacks by the letter or bible symbol in the middle left of the card."
   setup[4].Details = "Start buildings have a bible symbol in the middle left of the card. Place the stack anywhere all players can see them."
   setup[4].Dependencies = []*game.SetupRule{setup[3]}
@@ -70,7 +79,7 @@ func NewOraEtLaboraShortMultiplayer() *game.Game {
 
   setup[6].Details = "Place it at the position indicated by the matching symbol on the edge of the game board."
   setup[6].Dependencies = []*game.SetupRule{setup[1]}
-  // FIXME: Variant
+  // TODO: Variant
   setup[7].Details = "Only if playing the France variant. Place it at the position indicated by the matching symbol on the edge of the game board."
   setup[7].Dependencies = []*game.SetupRule{setup[1]}
   setup[9].Details = "Place 1 moor and 2 forest. Leave the left-most two spaces empty on the upper row of the landscape board."
@@ -80,7 +89,7 @@ func NewOraEtLaboraShortMultiplayer() *game.Game {
   setup[12].Details = "Stack buildings marked A, B, C, D under the respective piles of building cards next to the board."
   setup[12].Dependencies = []*game.SetupRule{setup[10]}
   setup[13].Details = "Clay, coin, grain, livestock, wood, peat. Place them right-side up."
-  // FIXME: Variant
+  // TODO: Variant
   setup[14].Details = "France variant: Remove malt/beer. Ireland variant: Remove flour/bread and grapes/wine."
   setup[15].Details = "Lowest cost on top."
 
