@@ -108,7 +108,7 @@ func (m *StepMap) GetAssignee(s *game.SetupStep) *game.Player {
 func (m *StepMap) GetAssignees(rule *game.SetupRule) []*game.Player {
   playersAssigned := make([]*game.Player, 0)
   for player,step := range m.stepMap {
-    if step.Rule.Description == rule.Description {
+    if step.Rule.Equal(rule) {
       playersAssigned = append(playersAssigned, player)
     }
   }

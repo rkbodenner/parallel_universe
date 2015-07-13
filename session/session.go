@@ -67,7 +67,7 @@ func NewSession(g *game.Game, players []*game.Player) (*Session, error) {
 
 func (session *Session) IsRuleDone(rule *game.SetupRule) bool {
   for _,step := range session.SetupSteps {
-    if step.Rule.Description == rule.Description && !step.Done {
+    if step.Rule.Equal(rule) && !step.Done {
       return false
     }
   }
