@@ -16,6 +16,13 @@ func NewSetupRule(desc string, arity string, deps ...*SetupRule) *SetupRule {
   return &SetupRule{0, desc, "", arity, deps}
 }
 
+func (a *SetupRule) Equal(b *SetupRule) bool {
+  return a.Id == b.Id &&
+    a.Description == b.Description &&
+    a.Details == b.Details &&
+    a.Arity == b.Arity
+}
+
 type SetupStep struct {
   Rule *SetupRule
   Owner *Player
@@ -45,7 +52,7 @@ func (step *SetupStep) Finish() {
 }
 
 func (a *SetupStep) Equal(b *SetupStep) bool {
-  if a.Rule.Id == b.Rule.Id {
+  if a.Rule.Equal(b.Rule) {
     if a.Owner == nil && b.Owner == nil {
       return true
     }

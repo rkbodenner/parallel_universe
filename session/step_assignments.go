@@ -53,8 +53,7 @@ func (m *StepPlayerIdMap) GetAssignee(s *game.SetupStep) *game.Player {
 func (m *StepPlayerIdMap) GetAssignees(rule *game.SetupRule) []*game.Player {
   assignees := make([]*game.Player, 0)
   for playerId, step := range m.stepMap {
-    // FIXME: Define equality for a SetupRule
-    if step.Rule.Description == rule.Description {
+    if step.Rule.Equal(rule) {
       assignees = append(assignees, m.playerMap[playerId])
     }
   }
