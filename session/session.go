@@ -92,7 +92,7 @@ func (session *Session) findNextUndoneSetupStep(player *game.Player) (*game.Setu
       !step.Done,
       session.AreStepDependenciesDone(step),
     }
-    fmt.Printf("Rule %d available? [%t %t %t %t]\n", step.Rule.Id, conditions[0], conditions[1], conditions[2], conditions[3])
+    fmt.Printf("Step %s available? [%t %t %t %t]\n", step.Rule.Description, conditions[0], conditions[1], conditions[2], conditions[3])
     if conditions[0] && conditions[1] && conditions[2] && conditions[3] {
       return step, nil
     }

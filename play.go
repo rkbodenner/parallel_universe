@@ -1,15 +1,22 @@
+/*
+
+  Test program that sets up a 2-player game
+
+*/
 package main
 
 import (
   "fmt"
+  "os"
   "github.com/rkbodenner/parallel_universe/collection"
   "github.com/rkbodenner/parallel_universe/game"
   "github.com/rkbodenner/parallel_universe/session"
 )
 
 func step(session *session.Session, player *game.Player) {
-  fmt.Printf("%s\t(%s)\n", session.Step(player), player.Name)
-  session.Step(player).Finish()
+  step := session.Step(player)
+  fmt.Printf("%s <-(%s)\n\n", step, player.Name)
+  step.Finish()
 }
 
 func main() {
@@ -18,20 +25,27 @@ func main() {
     &game.Player{2, "Player Two"},
   }
   game := collection.NewForbiddenIsland()
-  session := session.NewSession(game, players)
+  session, err := session.NewSession(game, players)
+  if nil != err {
+    fmt.Printf("Error creating game session: %s", err)
+    os.Exit(1)
+  }
 
-  fmt.Println("game on")
+  step(session, players[0])
+  step(session, players[0])
+  step(session, players[1])
+  step(session, players[0])
+  step(session, players[1])
+  step(session, players[0])
+  step(session, players[1])
+  step(session, players[1])
+  step(session, players[0])
 
-  step(session, players[0])
-  step(session, players[0])
-  step(session, players[1])
-  step(session, players[0])
-  step(session, players[1])
-  step(session, players[0])
-  step(session, players[1])
-  step(session, players[1])
-  step(session, players[0])
+  fmt.Println("== Final session state ==========================================")
+  session.Print()
 
   fmt.Println()
+
+  fmt.Println("== Setup rules ==================================================")
   game.PrintSetupRules()
 }
