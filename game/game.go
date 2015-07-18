@@ -1,9 +1,5 @@
 package game
 
-import (
-  "fmt"
-)
-
 type Game struct {
   Id uint `json:"id"`
   Name string `json:"name"`
@@ -18,11 +14,5 @@ func NewGame(name string, rules []*SetupRule, minPlayers int, maxPlayers int) *G
     SetupRules: rules,
     MinPlayers: minPlayers,
     MaxPlayers: maxPlayers,
-  }
-}
-
-func (game *Game) PrintSetupRules() {
-  for _,r := range game.SetupRules {
-    fmt.Printf("%s\t%s\n", r.Description, r.Arity)
   }
 }

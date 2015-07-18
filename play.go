@@ -19,6 +19,12 @@ func step(session *session.Session, player *game.Player) {
   step.Finish()
 }
 
+func printSetupRules(game *game.Game)  {
+  for _,r := range game.SetupRules {
+    fmt.Printf("%s\t%s\n", r.Description, r.Arity)
+  }
+}
+
 func main() {
   var players = []*game.Player{
     &game.Player{1, "Player One"},
@@ -47,5 +53,5 @@ func main() {
   fmt.Println()
 
   fmt.Println("== Setup rules ==================================================")
-  game.PrintSetupRules()
+  printSetupRules(game)
 }
