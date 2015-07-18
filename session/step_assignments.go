@@ -2,7 +2,6 @@ package session
 
 import (
   "encoding/json"
-  "fmt"
   "strconv"
   "github.com/rkbodenner/parallel_universe/game"
 )
@@ -43,7 +42,6 @@ func (m *StepPlayerIdMap) IsAssigned(step *game.SetupStep) bool {
 func (m *StepPlayerIdMap) GetAssignee(s *game.SetupStep) *game.Player {
   for playerId, step := range m.stepMap {
     if nil != step && s.Equal(step) {
-      fmt.Printf("Step %s is assigned to player #%d\n", s.Rule.Description, playerId)
       return m.playerMap[playerId]
     }
   }
