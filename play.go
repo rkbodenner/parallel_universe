@@ -15,8 +15,8 @@ import (
 
 func step(session *session.Session, player *game.Player) {
   step := session.Step(player)
-  fmt.Printf("%s <-(%s)\n\n", step, player.Name)
   step.Finish()
+  fmt.Println(session.StepWithAssigneeString(step))
 }
 
 func printSetupRules(game *game.Game)  {
@@ -46,10 +46,10 @@ func main() {
   step(session, players[1])
   step(session, players[1])
   step(session, players[0])
+  fmt.Println()
 
   fmt.Println("== Final session state ==========================================")
   session.Print()
-
   fmt.Println()
 
   fmt.Println("== Setup rules ==================================================")

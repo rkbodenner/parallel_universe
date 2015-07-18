@@ -66,5 +66,10 @@ func (a *SetupStep) Equal(b *SetupStep) bool {
 }
 
 func (step *SetupStep) String() string {
-  return fmt.Sprintf("%s", step.Rule.Description)
+  ownerName := ""
+  if nil != step.Owner {
+    ownerName = step.Owner.Name
+  }
+
+  return fmt.Sprintf("%s (%s)", step.Rule.Description, ownerName)
 }

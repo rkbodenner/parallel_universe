@@ -121,14 +121,14 @@ func (session *Session) StepAllPlayers() error {
 
 func (session *Session) Print() {
   for _,step := range session.SetupSteps {
-    ownerName := ""
-    if nil != step.Owner {
-      ownerName = step.Owner.Name
-    }
-    assigneeName := ""
-    if assignee := session.SetupAssignments.GetAssignee(step); assignee != nil {
-      assigneeName = assignee.Name
-    }
-    fmt.Printf("%s (%s)<-(%s) %t\n", step, ownerName, assigneeName, step.Done)
+    fmt.Println(session.StepWithAssigneeString(step))
   }
+}
+
+func (session *Session) StepWithAssigneeString(step *game.SetupStep) string {
+  assigneeName := ""
+  if assignee := session.SetupAssignments.GetAssignee(step); assignee != nil {
+    assigneeName = assignee.Name
+  }
+  return fmt.Sprintf("%s->(%s) %t", step, assigneeName, step.Done)
 }
