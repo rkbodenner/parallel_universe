@@ -16,6 +16,7 @@ type StepAssignments interface {
   GetAssignees(*game.SetupRule) []*game.Player
 }
 
+
 type StepPlayerIdMap struct {
   stepMap map[int]*game.SetupStep
   playerMap map[int]*game.Player
@@ -40,20 +41,19 @@ func (m *StepPlayerIdMap) IsAssigned(step *game.SetupStep) bool {
 }
 
 func (m *StepPlayerIdMap) GetAssignee(s *game.SetupStep) *game.Player {
-  for id,step := range m.stepMap {
-    if s.Equal(step) {
-      fmt.Printf("Step %s is assigned to player #%d\n", s.Rule.Description, id)
-      return m.playerMap[id]
+  for playerId, step := range m.stepMap {
+    if nil != step && s.Equal(step) {
+      fmt.Printf("Step %s is assigned to player #%d\n", s.Rule.Description, playerId)
+      return m.playerMap[playerId]
     }
   }
   return nil
 }
 
-
 func (m *StepPlayerIdMap) GetAssignees(rule *game.SetupRule) []*game.Player {
   assignees := make([]*game.Player, 0)
   for playerId, step := range m.stepMap {
-    if step.Rule.Equal(rule) {
+    if nil != step && step.Rule.Equal(rule) {
       assignees = append(assignees, m.playerMap[playerId])
     }
   }

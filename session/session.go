@@ -83,7 +83,7 @@ func (session *Session) AreStepDependenciesDone(step *game.SetupStep) bool {
   return true
 }
 
-func (session *Session) findNextUndoneSetupStep(player *game.Player) (*game.SetupStep, error) {
+func (session *Session) findNextUndoneSetupStep(player *game.Player) (*game.SetupStep) {
   var conditions [4]bool
   for _, step := range session.SetupSteps {
     conditions = [4]bool{
@@ -94,22 +94,20 @@ func (session *Session) findNextUndoneSetupStep(player *game.Player) (*game.Setu
     }
     fmt.Printf("Step %s available? [%t %t %t %t]\n", step.Rule.Description, conditions[0], conditions[1], conditions[2], conditions[3])
     if conditions[0] && conditions[1] && conditions[2] && conditions[3] {
-      return step, nil
+      return step
     }
   }
-  return nil, fmt.Errorf("No undone steps available for %s", player.Name)
+  return nil
 }
 
 func (session *Session) Step(player *game.Player) *game.SetupStep {
   step,hasAssignment := session.SetupAssignments.Get(player)
   if !hasAssignment || (hasAssignment && step.Done) {
-    nextStep,error := session.findNextUndoneSetupStep(player)
-    if ( error != nil ) {
-      fmt.Println(error.Error())
-      return step
+    nextStep := session.findNextUndoneSetupStep(player)
+    if nil != nextStep {
+      session.SetupAssignments.Set(player, nextStep)
+      step = nextStep
     }
-    session.SetupAssignments.Set(player, nextStep)
-    return nextStep
   }
   return step
 }
