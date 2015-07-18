@@ -31,14 +31,14 @@ type SetupStep struct {
 
 func NewGlobalSetupStep(rule *SetupRule) (*SetupStep, error) {
   if "Once" != rule.Arity {
-    return nil, fmt.Errorf("Setup rule must be done once")
+    return nil, fmt.Errorf("Global setup step cannot be created from a rule with different arity")
   }
   return &SetupStep{rule, nil, false}, nil
 }
 
-func NewSinglePlayerSetupStep(rule *SetupRule, owner *Player) (*SetupStep, error) {
+func NewPerPlayerSetupStep(rule *SetupRule, owner *Player) (*SetupStep, error) {
   if "Each player" != rule.Arity {
-    return nil, fmt.Errorf("Setup rule must be for each player")
+    return nil, fmt.Errorf("Per-player setup step cannot be created from a rule with different arity")
   }
   return &SetupStep{rule, owner, false}, nil
 }

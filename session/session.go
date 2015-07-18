@@ -48,7 +48,7 @@ func NewSession(g *game.Game, players []*game.Player) (*Session, error) {
       setupSteps = append(setupSteps, step)
     } else if "Each player" == rule.Arity {
       for _,p := range players {
-        step, err := game.NewSinglePlayerSetupStep(rule, p)
+        step, err := game.NewPerPlayerSetupStep(rule, p)
         if nil != err {
           return nil, err
         }

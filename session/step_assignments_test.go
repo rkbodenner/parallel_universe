@@ -26,9 +26,9 @@ func TestStepPlayerIdMap_GetAssignees(t *testing.T) {
     t.Fatal("Player 1 should be the assignee")
   }
 
-  step,_ = game.NewSinglePlayerSetupStep(r2, &p1)
+  step,_ = game.NewPerPlayerSetupStep(r2, &p1)
   assignments.Set(&p1, step)
-  step,_ = game.NewSinglePlayerSetupStep(r2, &p2)
+  step,_ = game.NewPerPlayerSetupStep(r2, &p2)
   assignments.Set(&p2, step)
 
   assignees = assignments.GetAssignees(r2)
@@ -70,9 +70,9 @@ func TestStepMap_GetAssignees(t *testing.T) {
     t.Fatal("Player 1 should be the assignee")
   }
 
-  step,_ = game.NewSinglePlayerSetupStep(r2, &p1)
+  step,_ = game.NewPerPlayerSetupStep(r2, &p1)
   assignments.Set(&p1, step)
-  step,_ = game.NewSinglePlayerSetupStep(r2, &p2)
+  step,_ = game.NewPerPlayerSetupStep(r2, &p2)
   assignments.Set(&p2, step)
 
   assignees = assignments.GetAssignees(r2)
